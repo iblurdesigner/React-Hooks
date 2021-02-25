@@ -1,24 +1,30 @@
 .Characters {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
 
-    border: solid 1px yellow;
+  border: solid 1px yellow;
 }
 
 .card {
-    width: 300px;
-    height: 390px;
-    margin: 30px 10px;
-    padding: 10px;
-    border-radius: 1rem;
-    box-shadow: 2px 2px 8px 1px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  height: 390px;
+  margin: 30px 10px;
+  padding: 10px;
+  border-radius: 1rem;
+  box-shadow: 2px 2px 8px 1px rgba(0, 0, 0, 0.1);
 
-    border: solid 1px red;
+  border: solid 1px red;
 }
 
 .DarkMode {
-    background-color: #0f2d52;
+  background-color: #0f2d52;
+}
+
+.search {
+  width: 100vw;
+  height: 30px;
+  margin: 10px;
 }

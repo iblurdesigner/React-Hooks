@@ -1,84 +1,88 @@
-import React, {useState, useEffect, useReducer, useMemo} from 'react'
-import '../styles/characters.css'
+import React, { useState, useEffect, useReducer, useMemo, useRef } from "react";
+import "../styles/characters.css";
 
 const initialState = {
-    favorites: []
-}
+  favorites: [],
+};
 
 const favoriteReducer = (state, action) => {
-    switch (action.type) {
-        case 'ADD_TO_FAVORITE':
-            return {
-                ...state,
-                favorites: [...state.favorites, action.payload]
-            }
-        default:
-            return state;
-    }
-}
+  switch (action.type) {
+    case "ADD_TO_FAVORITE":
+      return {
+        ...state,
+        favorites: [...state.favorites, action.payload],
+      };
+    default:
+      return state;
+  }
+};
 
 const Characters = () => {
+  const [characters, setCharacters] = useState([]);
+  //use Reducer
+  const [favorites, dispatch] = useReducer(favoriteReducer, initialState);
+  //use memo
+  const [search, setSearch] = useState("");
+  //use Ref
+  const searchInput = useRef(null);
 
-    const [characters, setCharacters] = useState([]);
-    //use Reducer
-    const [favorites, dispatch] = useReducer(favoriteReducer, initialState);
-    //use memo
-    const [search, setSearch] = useState('');
+  useEffect(() => {
+    fetch("https://rickandmortyapi.com/api/character")
+      .then((response) => response.json())
+      .then((data) => setCharacters(data.results));
+  }, []);
 
-    useEffect( () => {
-        fetch('https://rickandmortyapi.com/api/character')
-        .then(response => response.json())
-        .then(data => setCharacters(data.results))
-    }, [])
+  const handleClick = (favorite) => {
+    dispatch({ type: "ADD_TO_FAVORITE", payload: favorite });
+  };
 
-    const handleClick = favorite => {
-        dispatch({ type: 'ADD_TO_FAVORITE', payload: favorite })
-    }
+  //use MEMO
+  const handleSearch = () => {
+    setSearch(searchInput.current.value);
+  };
 
-    //use MEMO
-    const handleSearch = (event) => {
-        setSearch(event.target.value)
-    }
+  // const filteredUsers = characters.filter( (user) => {
+  //     return user.name.toLowerCase().includes(search.toLowerCase())
+  // })
 
-    // const filteredUsers = characters.filter( (user) => {
-    //     return user.name.toLowerCase().includes(search.toLowerCase())
-    // })
+  const filteredUsers = useMemo(
+    () =>
+      characters.filter((user) => {
+        return user.name.toLowerCase().includes(search.toLowerCase());
+      }),
+    [characters, search]
+  );
 
-    const filteredUsers = useMemo( () => 
-        characters.filter( (user) => {
-            return user.name.toLowerCase().includes(search.toLowerCase())
-        }),
-        [characters, search]
-    )
+  return (
+    <div className="Characters">
+      {favorites.favorites.map((favorite) => {
+        return <li key={favorite.id}>{favorite.name}</li>;
+      })}
 
-    return (
-        <div className="Characters">
+      <div className="Search">
+        <input
+          type="text"
+          value={search}
+          ref={searchInput}
+          onChange={handleSearch}
+        />
+      </div>
 
-            {favorites.favorites.map(favorite => {
-                return (
-                    <li key={favorite.id}>
-                        {favorite.name}
-                    </li>
-                )
-            })}
-
-            <div className="Search">
-                <input type="text" value={search} onChange={handleSearch} />
+      {filteredUsers.map((character) => {
+        return (
+          <div className="item" key={character.id}>
+            <div className="card">
+              <img src={character.image} alt={character.name} />
+              <h3>{character.name}</h3>
+              <button type="button" onClick={() => handleClick(character)}>
+                Agregar a Favorito
+              </button>
             </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
-            {filteredUsers.map( character => {
-                return(
-                    <div className="item" key={character.id}>
-                        <div className="card" >
-                            <img src={character.image} alt={character.name}/>
-                            <h3>{character.name}</h3>
-                            <button type="button" onClick={() => handleClick(character)}>Agregar a Favorito</button>
-                        </div>
-                    </div>
-                )
-            })}
-        </div>
-    )
-}
-
-export default Characters
+export default Characters;
